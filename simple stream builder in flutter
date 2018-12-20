@@ -1,0 +1,89 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+
+void main()
+{
+  runApp(new MyApp());
+}
+
+class MyApp extends StatelessWidget
+{
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Stream Builder',
+      home: new StreamClass(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class StreamClass extends StatefulWidget
+{
+  @override
+  State<StatefulWidget> createState() {
+      return new StreamClassState();
+  }
+}
+
+class StreamClassState extends State<StreamClass>
+{
+  StreamController<String> streamController; //declare streamContrller instance
+  List<String> namesList; //String list
+
+  @override
+  void initState() {
+    namesList = new List<String>(); //initialize list
+    streamController = new StreamController<String>(); //initialize streamcontroller
+    loadStream(); //method for adding data to stream
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+      return new Scaffold(
+        appBar: new AppBar(title: new Text('Stream Builder'),),
+        body: new StreamBuilder(
+          stream: streamController.stream,
+            builder: (BuildContext context, AsyncSnapshot snapshot){ //takes 2 argument (BuildContext and AsyncSnapshot)
+          if(snapshot.hasData) //if snapshot has data (which we already added using our loadstream method)
+            {
+              namesList.add(snapshot.data); //adding data to list
+              return new ListView.builder(itemBuilder: (BuildContext context, int index){ // creating listview
+                return new Card( //creating card
+                  child: new ListTile( //list tile as a child
+                    leading: new Icon(Icons.android), //no need, just extra
+                    title: new Text(namesList[index]), //fetching data from list and putting it in a listview
+                    onTap: (){
+
+                    },
+                  ),
+                );
+              },
+              itemCount: namesList.length, //size of our list
+              );
+              //return new Text(snapshot.data);
+            }
+            else
+              {
+                return new Text('Err data'); //if no data, then return text widget
+              }
+        }),
+      );
+  }
+
+  loadStream() async //method for adding data into stream
+  {
+    streamController.add('Item 1 Added');
+    await Future.delayed(Duration(seconds: 2)); //delay of 2 secs after adding each data
+    streamController.add('Item 2 Added');
+    await Future.delayed(Duration(seconds: 2));
+    streamController.add('Item 3 Added');
+    await Future.delayed(Duration(seconds: 2));
+
+    }
+
+
+}
+
+
